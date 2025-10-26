@@ -10,8 +10,12 @@ A visually stunning, animation-heavy portfolio website built with GSAP (GreenSoc
 - **Animated Background**: Continuously animated gradient orbs
 - **Smooth Scrolling**: Seamless scroll experience with smooth transitions
 - **Fully Responsive**: Optimized for all screen sizes (mobile, tablet, desktop)
-- **Minimalistic Design**: Clean, modern aesthetic with focus on content
-- **Performance Optimized**: Smooth 60fps animations
+- **Glassmorphism UI**: Modern frosted glass effects with backdrop filters
+- **Mobile Navigation**: Animated collapsible menu with hamburger toggle
+- **Social Sidebar**: Fixed social media links with hover animations (desktop only)
+- **Accessibility First**: Full keyboard navigation and reduced-motion support
+- **Touch Optimized**: Enhanced touch interactions for mobile devices
+- **Performance Optimized**: Smooth 60fps animations with reduced-motion fallbacks
 
 ## Color Palette
 
@@ -148,6 +152,10 @@ Then open your browser and visit: `http://localhost:8000`
 - Hide/show navigation on scroll
 - Smooth scroll to anchor links
 - Parallax on multiple elements
+- Fixed social sidebar with animated entrance
+- Mobile menu overlay with backdrop blur
+- Page and section fade-in transitions
+- Glassmorphism depth effects throughout
 
 ## Browser Support
 
@@ -163,6 +171,25 @@ Then open your browser and visit: `http://localhost:8000`
 - GSAP's ScrollTrigger is optimized for performance
 - Custom cursor disabled on mobile devices
 - Reduced animations on smaller screens where appropriate
+- **Accessibility**: Respects `prefers-reduced-motion` system preference
+- Glassmorphism effects use hardware-accelerated backdrop filters
+- Touch targets meet WCAG 2.1 minimum size requirements (44x44px)
+
+## Accessibility Features
+
+- **Keyboard Navigation**: Full keyboard support with Escape key to close mobile menu
+- **Screen Reader Support**: ARIA labels on all interactive elements
+- **Focus States**: Clear visible focus indicators on all interactive elements
+- **Reduced Motion**: Heavy animations disabled when user prefers reduced motion
+- **Touch Targets**: Minimum 44x44px touch targets for mobile accessibility
+- **Color Contrast**: WCAG AA compliant color contrast ratios
+
+## Responsive Breakpoints
+
+- **Desktop**: 1024px and above - Full experience with all effects
+- **Tablet**: 768px - 1024px - Scaled floating shapes, adapted layouts
+- **Mobile**: Below 768px - Stacked layout, collapsible menu, hidden social sidebar
+- **Small Mobile**: Below 480px - Further optimized spacing and typography
 
 ## Customization
 

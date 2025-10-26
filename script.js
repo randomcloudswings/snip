@@ -1,5 +1,7 @@
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
 let mouseX = 0;
@@ -49,106 +51,134 @@ document.querySelectorAll('a, button, .skill-card, .project-card, .nav-toggle').
 
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('.nav-menu');
+const menuOverlay = document.querySelector('.menu-overlay');
 
-navToggle.addEventListener('click', () => {
+function toggleMenu() {
     navMenu.classList.toggle('active');
-});
+    navToggle.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+}
+
+navToggle.addEventListener('click', toggleMenu);
+
+menuOverlay.addEventListener('click', toggleMenu);
 
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
+        if (navMenu.classList.contains('active')) {
+            toggleMenu();
+        }
     });
 });
 
-gsap.timeline()
-    .from('.nav', {
-        y: -100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-    })
-    .from('.nav-logo', {
-        opacity: 0,
-        x: -30,
-        duration: 0.8,
-        ease: 'power2.out'
-    }, '-=0.5')
-    .from('.nav-link', {
-        opacity: 0,
-        y: -20,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out'
-    }, '-=0.5');
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+        toggleMenu();
+    }
+});
 
-gsap.timeline()
-    .to('.hero-title-line', {
-        y: 0,
+if (!prefersReducedMotion) {
+    gsap.timeline()
+        .from('.nav', {
+            y: -100,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        })
+        .from('.nav-logo', {
+            opacity: 0,
+            x: -30,
+            duration: 0.8,
+            ease: 'power2.out'
+        }, '-=0.5')
+        .from('.nav-link', {
+            opacity: 0,
+            y: -20,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power2.out'
+        }, '-=0.5');
+
+    gsap.timeline()
+        .to('.hero-title-line', {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: 'power4.out',
+            delay: 0.5
+        })
+        .from('.hero-subtitle', {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        }, '-=0.6')
+        .from('.hero-cta .btn', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out'
+        }, '-=0.5')
+        .from('.scroll-indicator', {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: 'power2.out'
+        }, '-=0.5');
+} else {
+    gsap.set(['.nav', '.nav-logo', '.nav-link', '.hero-title-line', '.hero-subtitle', '.hero-cta .btn', '.scroll-indicator'], {
         opacity: 1,
-        duration: 1.2,
+        y: 0,
+        x: 0
+    });
+}
+
+if (!prefersReducedMotion) {
+    gsap.from('.floating-shape', {
+        scale: 0,
+        rotation: 180,
+        opacity: 0,
+        duration: 1.5,
         stagger: 0.2,
-        ease: 'power4.out',
-        delay: 0.5
-    })
-    .from('.hero-subtitle', {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-    }, '-=0.6')
-    .from('.hero-cta .btn', {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out'
-    }, '-=0.5')
-    .from('.scroll-indicator', {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: 'power2.out'
-    }, '-=0.5');
+        ease: 'elastic.out(1, 0.5)',
+        delay: 1
+    });
 
-gsap.from('.floating-shape', {
-    scale: 0,
-    rotation: 180,
-    opacity: 0,
-    duration: 1.5,
-    stagger: 0.2,
-    ease: 'elastic.out(1, 0.5)',
-    delay: 1
-});
+    gsap.to('.shape-1', {
+        y: -50,
+        x: 30,
+        rotation: 90,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
 
-gsap.to('.shape-1', {
-    y: -50,
-    x: 30,
-    rotation: 90,
-    duration: 8,
-    repeat: -1,
-    yoyo: true,
-    ease: 'sine.inOut'
-});
+    gsap.to('.shape-2', {
+        y: 40,
+        x: -30,
+        scale: 1.2,
+        duration: 10,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
 
-gsap.to('.shape-2', {
-    y: 40,
-    x: -30,
-    scale: 1.2,
-    duration: 10,
-    repeat: -1,
-    yoyo: true,
-    ease: 'sine.inOut'
-});
-
-gsap.to('.shape-3', {
-    y: -30,
-    x: 40,
-    rotation: -45,
-    duration: 7,
-    repeat: -1,
-    yoyo: true,
-    ease: 'sine.inOut'
-});
+    gsap.to('.shape-3', {
+        y: -30,
+        x: 40,
+        rotation: -45,
+        duration: 7,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
+} else {
+    gsap.set('.floating-shape', { opacity: 0.1 });
+}
 
 gsap.to('.scroll-line', {
     scaleY: 0.5,
@@ -712,3 +742,91 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', () => {
     ScrollTrigger.refresh();
 });
+
+if (!prefersReducedMotion) {
+    gsap.from('.social-sidebar', {
+        x: -100,
+        opacity: 0,
+        duration: 1,
+        delay: 1.5,
+        ease: 'power3.out'
+    });
+
+    gsap.from('.social-icon', {
+        x: -30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        delay: 2,
+        ease: 'back.out(1.7)'
+    });
+}
+
+document.querySelectorAll('.social-icon').forEach((icon, index) => {
+    icon.addEventListener('mouseenter', () => {
+        if (!prefersReducedMotion) {
+            gsap.to(icon, {
+                scale: 1.2,
+                rotation: 5,
+                duration: 0.3,
+                ease: 'back.out(1.7)'
+            });
+        }
+    });
+
+    icon.addEventListener('mouseleave', () => {
+        if (!prefersReducedMotion) {
+            gsap.to(icon, {
+                scale: 1,
+                rotation: 0,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        }
+    });
+});
+
+document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        if (!prefersReducedMotion) {
+            gsap.to(btn, {
+                scale: 1.05,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        }
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        if (!prefersReducedMotion) {
+            gsap.to(btn, {
+                scale: 1,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        }
+    });
+});
+
+if (!prefersReducedMotion) {
+    const navLinks = document.querySelectorAll('.nav-menu.active .nav-link');
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                const menu = mutation.target;
+                if (menu.classList.contains('active')) {
+                    gsap.from('.nav-menu .nav-link', {
+                        x: 50,
+                        opacity: 0,
+                        duration: 0.4,
+                        stagger: 0.1,
+                        ease: 'power3.out'
+                    });
+                }
+            }
+        });
+    });
+
+    const navMenu = document.querySelector('.nav-menu');
+    observer.observe(navMenu, { attributes: true });
+}
