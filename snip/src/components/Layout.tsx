@@ -20,7 +20,7 @@ export const LeftPanel = styled.aside`
   background-color: ${({ theme }) => theme.colors.dark};
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   overflow-y: auto;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
