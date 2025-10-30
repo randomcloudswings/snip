@@ -1,20 +1,19 @@
 # Animation-Heavy Portfolio Website
 
-A visually stunning, animation-heavy portfolio website built with modern web technologies featuring smooth animations, custom interactions, and a beautiful split-screen layout.
+A visually stunning, animation-heavy portfolio website built with React, GSAP, ShadCN UI components, featuring custom cursor, parallax effects, and animated backgrounds.
 
-## Project Structure
+## 🎨 Overview
 
-This repository contains a Next.js-based portfolio application located in the `/snip` directory.
+This portfolio showcases a premium, modern web experience with:
 
-### Navigate to the Application
+- **GSAP Animations**: Professional animations throughout every section
+- **ShadCN UI Components**: Beautiful, accessible components with Tailwind CSS
+- **Custom Cursor**: Interactive cursor with hover-reactive animations
+- **Parallax Effects**: Depth and visual interest through scroll-based motion
+- **Animated Background**: Particle system with floating gradient effects
+- **Fully Responsive**: Optimized for all device sizes
 
-```bash
-cd snip
-```
-
-See the [snip/README.md](./snip/README.md) file for detailed setup instructions, features, and documentation.
-
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
 # Navigate to the project
@@ -27,51 +26,65 @@ npm install
 npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## Features
+## 📁 Project Structure
 
-- 🎨 **Split-screen Layout** - 40% left panel (hero) and 60% right panel (content)
-- 🌙 **Dark Theme** - Custom color palette with deep blue background
-- 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop
-- ⚡ **Next.js 15** - Server-side rendering with App Router
-- 💅 **styled-components** - Theming and CSS-in-JS
-- 🎭 **GSAP Ready** - Professional animation library integrated
-- 🔤 **Custom Fonts** - Spline Sans Mono and Inter via next/font
-- 🎯 **TypeScript** - Type-safe development
+The application is located in the `/snip` directory. See [snip/README.md](./snip/README.md) for detailed documentation.
 
-## Tech Stack
+## 🎯 Features
 
-- Next.js 15 (TypeScript)
-- styled-components with SSR support
-- GSAP (GreenSock Animation Platform)
-- Lenis (Smooth scrolling)
-- React Icons
-- Spline 3D tool support
+- ✅ GSAP animations with ScrollTrigger on every section
+- ✅ Custom animated cursor that reacts to hover states
+- ✅ ShadCN UI components with custom theming
+- ✅ Skills section with 12 technologies (Java, Spring, Postgres, MySQL, JavaScript, HTML5, CSS3, React, Python, Bash, Git, Postman)
+- ✅ Parallax scrolling effects for visual depth
+- ✅ Animated gradient background with particle system
+- ✅ Fully responsive design (mobile, tablet, desktop)
+- ✅ Smooth scroll behavior throughout
 
-## Sections
+## 🎨 Color Palette
 
-1. **Home** - Hero section in left panel
-2. **About** - Personal introduction
-3. **Projects** - Featured project showcase
-4. **Skills** - Technical skills grid with icons
+The site uses a carefully curated color scheme:
+
+- **#37353E** - Dark purple-gray (primary background)
+- **#44444E** - Medium gray (cards, secondary elements)
+- **#715A5A** - Muted rose-brown (accents, hover states)
+- **#D3DAD9** - Light gray-blue (text, foreground)
+
+## 🛠️ Tech Stack
+
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **GSAP** - Animation library with ScrollTrigger
+- **Tailwind CSS** - Utility-first CSS framework
+- **ShadCN UI** - Component library
+- **Lucide React** - Icon library
+
+## 📱 Sections
+
+1. **Hero** - Eye-catching introduction with gradient text and animated CTAs
+2. **About** - Four-card grid with scroll-triggered animations
+3. **Skills** - 12 technology cards with hover animations
+4. **Projects** - Featured projects with parallax effects
 5. **Contact** - Social links and contact information
 
-## Color Palette
+## 📦 Building for Production
 
-- **#0e1129** - Background (deep dark blue)
-- **#37353E** - Dark purple-gray
-- **#44444E** - Medium gray
-- **#715A5A** - Muted rose-brown accent
-- **#D3DAD9** - Light gray-blue text
-- **#8B7FFF** - Primary purple
-- **#FF6B9D** - Secondary pink
-- **#4ECDC4** - Tertiary teal
+```bash
+cd snip
+npm run build
+```
 
-## Development
+The optimized build will be in the `snip/dist/` directory.
 
-For detailed development instructions, customization options, and API documentation, see [snip/README.md](./snip/README.md).
+## 📚 Documentation
+
+For detailed setup instructions, customization options, and API documentation, see:
+
+- [snip/README.md](./snip/README.md) - Complete project documentation
 
 ---
 
-Built with ❤️ using Next.js, styled-components, and GSAP
+Built with ❤️ using React, GSAP, Tailwind CSS, and ShadCN UI
