@@ -1,26 +1,149 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import emailjs from '@emailjs/browser'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Input } from '../ui/input'
-import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog'
+import { Github, Linkedin, Mail, Twitter, Loader2, Check, AlertCircle } from 'lucide-react'
 import { useReducedMotion } from '@/hooks'
 import { ANIMATION_EASINGS, ANIMATION_DURATIONS, STAGGER_AMOUNTS } from '@/utils/animations'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// EmailJS configuration from environment variables
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+const contactFormSchema = z.object({
+  name: z.string().min(1, { message: 'Name is required' }).min(2, { message: 'Name must be at least 2 characters' }),
+  email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
+  message: z.string().min(1, { message: 'Message is required' }).min(10, { message: 'Message must be at least 10 characters' }),
+})
+
+type ContactFormValues = z.infer<typeof contactFormSchema>
+
 export function Contact() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const dialogContentRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [showError, setShowError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
+    },
+  })
+
+  const handleSubmit = async (data: ContactFormValues) => {
+    setIsSubmitting(true)
+    setErrorMessage('')
+    
+    try {
+      // Check if EmailJS is configured
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        throw new Error('EmailJS is not configured. Please add your EmailJS credentials to the .env file.')
+      }
+
+      // Send email using EmailJS
+      const templateParams = {
+        from_name: data.name,
+        from_email: data.email,
+        message: data.message,
+        to_name: 'Portfolio Owner', // You can customize this
+      }
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      )
+      
+      setIsSubmitting(false)
+      setShowSuccess(true)
+      form.reset()
+    } catch (error) {
+      console.error('Failed to send email:', error)
+      setIsSubmitting(false)
+      setErrorMessage(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to send message. Please try again or contact me directly via email.'
+      )
+      setShowError(true)
+    }
   }
+
+  // Animate dialog content when it opens
+  useEffect(() => {
+    if (!showSuccess || !dialogContentRef.current || prefersReducedMotion) return
+
+    const content = dialogContentRef.current
+    const icon = content.querySelector('[data-success-icon]')
+    const title = content.querySelector('[data-success-title]')
+    const description = content.querySelector('[data-success-description]')
+    const button = content.querySelector('[data-success-button]')
+
+    const timeline = gsap.timeline()
+
+    gsap.set([icon, title, description, button], { opacity: 0, y: 20 })
+
+    timeline
+      .to(icon, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: ANIMATION_DURATIONS.medium,
+        ease: ANIMATION_EASINGS.bounce,
+      })
+      .to(
+        [title, description],
+        {
+          opacity: 1,
+          y: 0,
+          duration: ANIMATION_DURATIONS.fast,
+          stagger: STAGGER_AMOUNTS.tight,
+          ease: ANIMATION_EASINGS.smooth,
+        },
+        '-=0.2'
+      )
+      .to(
+        button,
+        {
+          opacity: 1,
+          y: 0,
+          duration: ANIMATION_DURATIONS.fast,
+          ease: ANIMATION_EASINGS.smooth,
+        },
+        '-=0.1'
+      )
+
+    return () => {
+      timeline.kill()
+    }
+  }, [showSuccess, prefersReducedMotion])
 
   useEffect(() => {
     if (!sectionRef.current || !headerRef.current || !contentRef.current) return
@@ -86,128 +209,249 @@ export function Contact() {
   }, [prefersReducedMotion])
 
   return (
-    <section 
-      ref={sectionRef}
-      id="contact" 
-      className="min-h-screen flex items-center justify-center py-20 md:py-32 relative"
-      data-scroll-section
-    >
-      <div className="container mx-auto px-4" data-parallax-layer="content">
-        <div className="max-w-4xl mx-auto space-y-12">
-          <div 
-            ref={headerRef}
-            className="text-center space-y-4" 
-            data-gsap-contact-header
-          >
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Get In Touch
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Have a project in mind? Let&apos;s work together to bring your ideas to life.
-            </p>
-          </div>
-
-          <div 
-            ref={contentRef}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8" 
-            data-gsap-contact-content
-          >
-            <div className="lg:col-span-2">
-              <Card className="backdrop-blur-sm bg-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle>Send a Message</CardTitle>
-                  <CardDescription>
-                    Fill out the form below and I&apos;ll get back to you as soon as possible.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input 
-                        id="name" 
-                        placeholder="Your name"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email"
-                        placeholder="your.email@example.com"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
-                      <Textarea 
-                        id="message"
-                        placeholder="Tell me about your project..."
-                        className="min-h-[150px]"
-                        required
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full" size="lg">
-                      Send Message
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+    <>
+      <section 
+        ref={sectionRef}
+        id="contact" 
+        className="min-h-screen flex items-center justify-center py-20 md:py-32 relative"
+        data-scroll-section
+        aria-labelledby="contact-heading"
+      >
+        <div className="container mx-auto px-4" data-parallax-layer="content">
+          <div className="max-w-4xl mx-auto space-y-12">
+            <div 
+              ref={headerRef}
+              className="text-center space-y-4" 
+              data-gsap-contact-header
+            >
+              <h2 id="contact-heading" className="text-4xl md:text-6xl font-bold tracking-tight">
+                Get In Touch
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                Have a project in mind? Let&apos;s work together to bring your ideas to life.
+              </p>
             </div>
 
-            <div className="space-y-6">
-              <Card className="backdrop-blur-sm bg-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Contact Info</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Mail className="w-5 h-5 text-muted-foreground mt-0.5" />
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Email</p>
-                      <p className="text-sm text-muted-foreground">contact@example.com</p>
+            <div 
+              ref={contentRef}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8" 
+              data-gsap-contact-content
+            >
+              <div className="lg:col-span-2">
+                <Card className="backdrop-blur-sm bg-card/50 border-border/50">
+                  <CardHeader>
+                    <CardTitle>Send a Message</CardTitle>
+                    <CardDescription>
+                      Fill out the form below and I&apos;ll get back to you as soon as possible.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Your name"
+                                  {...field}
+                                  aria-required="true"
+                                  disabled={isSubmitting}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="email"
+                                  placeholder="your.email@example.com"
+                                  {...field}
+                                  aria-required="true"
+                                  disabled={isSubmitting}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="message"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Message</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="Tell me about your project..."
+                                  className="min-h-[150px]"
+                                  {...field}
+                                  aria-required="true"
+                                  disabled={isSubmitting}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button 
+                          type="submit" 
+                          className="w-full" 
+                          size="lg"
+                          disabled={isSubmitting}
+                          aria-label={isSubmitting ? 'Sending message' : 'Send message'}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            'Send Message'
+                          )}
+                        </Button>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-6">
+                <Card className="backdrop-blur-sm bg-card/50 border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Contact Info</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Mail className="w-5 h-5 text-muted-foreground mt-0.5" aria-hidden="true" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">Email</p>
+                        <a 
+                          href="mailto:contact@example.com" 
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          contact@example.com
+                        </a>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="pt-4 border-t border-border/50">
-                    <p className="text-sm font-medium mb-3">Location</p>
-                    <p className="text-sm text-muted-foreground">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="pt-4 border-t border-border/50">
+                      <p className="text-sm font-medium mb-3">Location</p>
+                      <p className="text-sm text-muted-foreground">
+                        Remote / Available Worldwide
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card className="backdrop-blur-sm bg-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Connect</CardTitle>
-                  <CardDescription>Find me on social media</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-3">
-                    <Button size="icon" variant="outline" aria-label="GitHub">
-                      <Github className="w-5 h-5" />
-                    </Button>
-                    <Button size="icon" variant="outline" aria-label="LinkedIn">
-                      <Linkedin className="w-5 h-5" />
-                    </Button>
-                    <Button size="icon" variant="outline" aria-label="Twitter">
-                      <Twitter className="w-5 h-5" />
-                    </Button>
-                    <Button size="icon" variant="outline" aria-label="Email">
-                      <Mail className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                <Card className="backdrop-blur-sm bg-card/50 border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Connect</CardTitle>
+                    <CardDescription>Find me on social media</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-3">
+                      <Button size="icon" variant="outline" aria-label="GitHub" asChild>
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                          <Github className="w-5 h-5" />
+                        </a>
+                      </Button>
+                      <Button size="icon" variant="outline" aria-label="LinkedIn" asChild>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                          <Linkedin className="w-5 h-5" />
+                        </a>
+                      </Button>
+                      <Button size="icon" variant="outline" aria-label="Twitter" asChild>
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                          <Twitter className="w-5 h-5" />
+                        </a>
+                      </Button>
+                      <Button size="icon" variant="outline" aria-label="Email" asChild>
+                        <a href="mailto:contact@example.com">
+                          <Mail className="w-5 h-5" />
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent 
+          ref={dialogContentRef}
+          className="sm:max-w-md"
+          aria-describedby="success-description"
+        >
+          <DialogHeader>
+            <div className="flex justify-center mb-4" data-success-icon>
+              <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+            </div>
+            <DialogTitle className="text-center" data-success-title>
+              Message Sent Successfully!
+            </DialogTitle>
+            <DialogDescription 
+              id="success-description"
+              className="text-center" 
+              data-success-description
+            >
+              Thank you for reaching out. I&apos;ll get back to you as soon as possible.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-4" data-success-button>
+            <Button onClick={() => setShowSuccess(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showError} onOpenChange={setShowError}>
+        <DialogContent 
+          className="sm:max-w-md"
+          aria-describedby="error-description"
+        >
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+            </div>
+            <DialogTitle className="text-center">
+              Failed to Send Message
+            </DialogTitle>
+            <DialogDescription 
+              id="error-description"
+              className="text-center" 
+            >
+              {errorMessage || 'Something went wrong. Please try again or contact me directly via email.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <Button onClick={() => setShowError(false)} variant="outline">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
