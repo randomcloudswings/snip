@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import emailjs from '@emailjs/browser'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Input } from '../ui/input'
@@ -15,11 +17,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog'
-import { Github, Linkedin, Mail, Twitter, Loader2, Check } from 'lucide-react'
+import { Github, Linkedin, Mail, Twitter, Loader2, Check, AlertCircle } from 'lucide-react'
 import { useReducedMotion } from '@/hooks'
 import { ANIMATION_EASINGS, ANIMATION_DURATIONS, STAGGER_AMOUNTS } from '@/utils/animations'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// EmailJS configuration from environment variables
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 const contactFormSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }).min(2, { message: 'Name must be at least 2 characters' }),
@@ -37,8 +44,11 @@ export function Contact() {
   const prefersReducedMotion = useReducedMotion()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [showError, setShowError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -48,14 +58,42 @@ export function Contact() {
 
   const handleSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true)
+    setErrorMessage('')
     
-    // Simulate API call with delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    
-    console.log('Form submitted:', data)
-    setIsSubmitting(false)
-    setShowSuccess(true)
-    form.reset()
+    try {
+      // Check if EmailJS is configured
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        throw new Error('EmailJS is not configured. Please add your EmailJS credentials to the .env file.')
+      }
+
+      // Send email using EmailJS
+      const templateParams = {
+        from_name: data.name,
+        from_email: data.email,
+        message: data.message,
+        to_name: 'Portfolio Owner', // You can customize this
+      }
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      )
+      
+      setIsSubmitting(false)
+      setShowSuccess(true)
+      form.reset()
+    } catch (error) {
+      console.error('Failed to send email:', error)
+      setIsSubmitting(false)
+      setErrorMessage(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to send message. Please try again or contact me directly via email.'
+      )
+      setShowError(true)
+    }
   }
 
   // Animate dialog content when it opens
@@ -213,13 +251,6 @@ export function Contact() {
                         <FormField
                           control={form.control}
                           name="name"
-                          rules={{
-                            required: 'Name is required',
-                            minLength: {
-                              value: 2,
-                              message: 'Name must be at least 2 characters',
-                            },
-                          }}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Name</FormLabel>
@@ -239,13 +270,6 @@ export function Contact() {
                         <FormField
                           control={form.control}
                           name="email"
-                          rules={{
-                            required: 'Email is required',
-                            pattern: {
-                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                              message: 'Please enter a valid email address',
-                            },
-                          }}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Email</FormLabel>
@@ -266,13 +290,6 @@ export function Contact() {
                         <FormField
                           control={form.control}
                           name="message"
-                          rules={{
-                            required: 'Message is required',
-                            minLength: {
-                              value: 10,
-                              message: 'Message must be at least 10 characters',
-                            },
-                          }}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Message</FormLabel>
@@ -401,6 +418,35 @@ export function Contact() {
           </DialogHeader>
           <div className="flex justify-center mt-4" data-success-button>
             <Button onClick={() => setShowSuccess(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showError} onOpenChange={setShowError}>
+        <DialogContent 
+          className="sm:max-w-md"
+          aria-describedby="error-description"
+        >
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+            </div>
+            <DialogTitle className="text-center">
+              Failed to Send Message
+            </DialogTitle>
+            <DialogDescription 
+              id="error-description"
+              className="text-center" 
+            >
+              {errorMessage || 'Something went wrong. Please try again or contact me directly via email.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <Button onClick={() => setShowError(false)} variant="outline">
               Close
             </Button>
           </div>

@@ -8,7 +8,7 @@ A modern, animated portfolio website built with React, TypeScript, GSAP, and Tai
 - **Advanced Animations**: GSAP-powered hero timeline, scroll-triggered reveals, and smooth transitions
 - **Interactive Background**: P5.js particle system with ink-like effects
 - **Custom Cursor**: Dynamic cursor that responds to hover states
-- **Contact Form**: Validated form using react-hook-form + Zod with success modal
+- **Working Contact Form**: Validated form using react-hook-form + Zod with EmailJS integration
 - **Fully Accessible**: WCAG-compliant with proper ARIA labels, keyboard navigation, and screen reader support
 - **Responsive Design**: Mobile-first approach with breakpoints for all screen sizes
 - **Motion Preferences**: Respects `prefers-reduced-motion` for accessibility
@@ -17,6 +17,9 @@ A modern, animated portfolio website built with React, TypeScript, GSAP, and Tai
 
 - Node.js 18+ 
 - npm or pnpm
+- EmailJS account (free) - [Sign up here](https://www.emailjs.com/)
+
+> 💡 **Quick Start**: See [QUICK_START.md](./QUICK_START.md) for a 5-minute setup guide!
 
 ## 🛠️ Setup & Installation
 
@@ -31,7 +34,37 @@ A modern, animated portfolio website built with React, TypeScript, GSAP, and Tai
    npm install
    ```
 
-3. **Start development server**
+3. **Configure EmailJS (Required for Contact Form)**
+   
+   The contact form uses [EmailJS](https://www.emailjs.com/) to send emails. Follow these steps:
+   
+   a. Create a free account at [EmailJS.com](https://www.emailjs.com/)
+   
+   b. Create an email service (Gmail, Outlook, etc.)
+   
+   c. Create an email template with the following variables:
+      - `{{from_name}}` - Sender's name
+      - `{{from_email}}` - Sender's email
+      - `{{message}}` - Message content
+      - `{{to_name}}` - Your name (optional)
+   
+   d. Copy `.env.example` to `.env`:
+      ```bash
+      cp .env.example .env
+      ```
+   
+   e. Add your EmailJS credentials to `.env`:
+      ```env
+      VITE_EMAILJS_SERVICE_ID=your_service_id
+      VITE_EMAILJS_TEMPLATE_ID=your_template_id
+      VITE_EMAILJS_PUBLIC_KEY=your_public_key
+      ```
+   
+   > **Note**: The contact form will display an error if EmailJS is not configured.
+   > 
+   > **Detailed Guide**: See [EMAILJS_SETUP.md](./EMAILJS_SETUP.md) for step-by-step instructions with screenshots.
+
+4. **Start development server**
    ```bash
    npm run dev
    ```
@@ -201,18 +234,42 @@ The site respects `prefers-reduced-motion`:
 
 ## 📋 Contact Form
 
-The contact form uses modern validation:
+The contact form uses modern validation and EmailJS for email delivery:
+
+### Form Validation
 - **react-hook-form**: Efficient form state management
 - **Zod**: Type-safe schema validation
 - **Validation Rules**:
   - Name: Required, minimum 2 characters
   - Email: Required, valid email format
   - Message: Required, minimum 10 characters
-- **UX Features**:
-  - Inline error messages
-  - Loading spinner during submission
-  - Success modal with GSAP animations
-  - Form reset after submission
+
+### Email Integration
+- **EmailJS**: Sends emails directly from the client-side
+- Environment variables for secure configuration
+- Template parameters:
+  - `from_name`: Sender's name from form
+  - `from_email`: Sender's email from form
+  - `message`: Message content from form
+  - `to_name`: Recipient name (customizable)
+
+### UX Features
+- Inline error messages with ARIA announcements
+- Loading spinner during submission
+- Success modal with GSAP animations
+- Error handling with user-friendly messages
+- Form reset after successful submission
+- Accessible with keyboard navigation and screen readers
+
+### EmailJS Template Example
+Create a template in EmailJS with this structure:
+```
+New message from {{from_name}}
+Email: {{from_email}}
+
+Message:
+{{message}}
+```
 
 ## 🎯 Animation Patterns
 
@@ -242,6 +299,17 @@ The contact form uses modern validation:
 
 ## 🔧 Configuration
 
+### Environment Variables
+Create a `.env` file in the project root with your EmailJS credentials:
+
+```env
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+> **Important**: Never commit `.env` to version control. Use `.env.example` as a template.
+
 ### Tailwind Configuration
 Custom theme defined in `tailwind.config.js`:
 - HSL color variables for dark theme
@@ -261,6 +329,7 @@ Fast builds with:
 - React plugin with Fast Refresh
 - Path resolution for @ imports
 - Optimized chunks for production
+- Environment variable support with VITE_ prefix
 
 ## 📝 Changelog
 
@@ -268,11 +337,14 @@ Fast builds with:
 
 **v1.4.0 - Contact Form Polish** (Current)
 - ✨ Integrated react-hook-form + Zod validation
+- 📧 EmailJS integration for working contact form
 - ✨ GSAP-powered success modal with staggered animations
 - ✨ Loading states with spinner micro-interaction
+- ✨ Error handling with user-friendly error dialog
 - ♿ Enhanced form accessibility with ARIA attributes
 - ♿ Added proper heading IDs across all sections
 - ♿ Smooth scroll respects prefers-reduced-motion
+- 🔒 Environment variables for secure EmailJS configuration
 
 **v1.3.0 - Scroll Animations**
 - ✨ ScrollTrigger reveals for all sections
