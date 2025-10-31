@@ -131,6 +131,7 @@ export function Skills() {
       id="skills" 
       className="min-h-screen flex items-center justify-center py-20 md:py-32 relative"
       data-scroll-section
+      aria-labelledby="skills-heading"
     >
       <div ref={contentLayerRef} className="container mx-auto px-4" data-parallax-layer="content">
         <div className="max-w-6xl mx-auto space-y-12">
@@ -139,7 +140,7 @@ export function Skills() {
             className="text-center space-y-4" 
             data-gsap-skills-header
           >
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+            <h2 id="skills-heading" className="text-4xl md:text-6xl font-bold tracking-tight">
               Skills &amp; Technologies
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">

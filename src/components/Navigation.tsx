@@ -76,7 +76,8 @@ export function Navigation() {
     
     const element = document.querySelector(href)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      element.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' })
     }
   }
 

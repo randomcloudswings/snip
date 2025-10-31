@@ -97,6 +97,7 @@ export function Hero() {
       id="hero" 
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
       data-scroll-section
+      aria-label="Hero section"
     >
       <div 
         ref={bgLayerRef}
@@ -136,11 +137,20 @@ export function Hero() {
             className="flex flex-wrap gap-4 justify-center items-center" 
             data-gsap-hero-cta
           >
-            <Button size="lg" className="text-base px-8 py-6">
-              View My Work
+            <Button 
+              size="lg" 
+              className="text-base px-8 py-6"
+              asChild
+            >
+              <a href="#projects">View My Work</a>
             </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 py-6">
-              Get In Touch
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-base px-8 py-6"
+              asChild
+            >
+              <a href="#contact">Get In Touch</a>
             </Button>
           </div>
 

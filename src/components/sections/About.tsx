@@ -124,6 +124,7 @@ export function About() {
       id="about" 
       className="min-h-screen flex items-center justify-center py-20 md:py-32 relative"
       data-scroll-section
+      aria-labelledby="about-heading"
     >
       <div className="container mx-auto px-4" data-parallax-layer="content">
         <div className="max-w-6xl mx-auto space-y-12">
@@ -132,7 +133,7 @@ export function About() {
             className="text-center space-y-4" 
             data-gsap-about-header
           >
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+            <h2 id="about-heading" className="text-4xl md:text-6xl font-bold tracking-tight">
               About Me
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
