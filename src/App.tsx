@@ -8,7 +8,21 @@ gsap.registerPlugin(ScrollTrigger)
 
 function App() {
   useEffect(() => {
-    // GSAP setup can be added here
+    const ctx = gsap.context(() => {
+      ScrollTrigger.refresh()
+    })
+
+    const handleResize = () => {
+      ScrollTrigger.refresh()
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      ctx.revert()
+      window.removeEventListener('resize', handleResize)
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
   }, [])
 
   return (
