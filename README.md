@@ -1,90 +1,94 @@
-# Animation-Heavy Portfolio Website
+# Portfolio Project
 
-A visually stunning, animation-heavy portfolio website built with React, GSAP, ShadCN UI components, featuring custom cursor, parallax effects, and animated backgrounds.
+A modern portfolio website built with Vite, React, TypeScript, Tailwind CSS, and ShadCN UI.
 
-## 🎨 Overview
+## Tech Stack
 
-This portfolio showcases a premium, modern web experience with:
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS 3.4
+- **UI Components**: ShadCN UI (Button, Card, Dialog, Sheet, Typography)
+- **Animation**: GSAP with ScrollTrigger
+- **Canvas**: p5.js (via @p5-wrapper/react)
+- **Form Handling**: React Hook Form + Zod
+- **Icons**: Lucide React
+- **Utilities**: clsx, class-variance-authority, tailwind-merge
 
-- **GSAP Animations**: Professional animations throughout every section
-- **ShadCN UI Components**: Beautiful, accessible components with Tailwind CSS
-- **Custom Cursor**: Interactive cursor with hover-reactive animations
-- **Parallax Effects**: Depth and visual interest through scroll-based motion
-- **Animated Background**: Particle system with floating gradient effects
-- **Fully Responsive**: Optimized for all device sizes
+## Project Structure
 
-## 🚀 Quick Start
-
-```bash
-# Navigate to the project
-cd snip
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
+```
+src/
+├── components/
+│   ├── ui/              # ShadCN UI components
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   ├── sheet.tsx
+│   │   └── typography.tsx
+│   └── sections/        # Page sections
+│       ├── Hero.tsx
+│       ├── About.tsx
+│       ├── Projects.tsx
+│       └── Contact.tsx
+├── lib/
+│   └── utils.ts        # Utility functions (cn helper)
+├── App.tsx
+├── main.tsx
+└── index.css           # Global styles & Tailwind
 ```
 
-Then open [http://localhost:5173](http://localhost:5173) in your browser.
+## Color Palette
 
-## 📁 Project Structure
+The project uses a custom dark theme based on the following colors:
+- Background: `#37353E` (HSL: 262 13% 21%)
+- Secondary: `#44444E` (HSL: 262 11% 26%)
+- Accent: `#715A5A` (HSL: 0 10% 40%)
+- Muted: `#D3DAD9` (HSL: 180 8% 83%)
 
-The application is located in the `/snip` directory. See [snip/README.md](./snip/README.md) for detailed documentation.
+## Features
 
-## 🎯 Features
+- ✅ Smooth scrolling behavior
+- ✅ Custom cursor (native cursor hidden)
+- ✅ Dark mode by default
+- ✅ Responsive design
+- ✅ GSAP animation setup
+- ✅ TypeScript path aliases (@/* imports)
+- ✅ ShadCN UI components ready to use
 
-- ✅ GSAP animations with ScrollTrigger on every section
-- ✅ Custom animated cursor that reacts to hover states
-- ✅ ShadCN UI components with custom theming
-- ✅ Skills section with 12 technologies (Java, Spring, Postgres, MySQL, JavaScript, HTML5, CSS3, React, Python, Bash, Git, Postman)
-- ✅ Parallax scrolling effects for visual depth
-- ✅ Animated gradient background with particle system
-- ✅ Fully responsive design (mobile, tablet, desktop)
-- ✅ Smooth scroll behavior throughout
-
-## 🎨 Color Palette
-
-The site uses a carefully curated color scheme:
-
-- **#37353E** - Dark purple-gray (primary background)
-- **#44444E** - Medium gray (cards, secondary elements)
-- **#715A5A** - Muted rose-brown (accents, hover states)
-- **#D3DAD9** - Light gray-blue (text, foreground)
-
-## 🛠️ Tech Stack
-
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **GSAP** - Animation library with ScrollTrigger
-- **Tailwind CSS** - Utility-first CSS framework
-- **ShadCN UI** - Component library
-- **Lucide React** - Icon library
-
-## 📱 Sections
-
-1. **Hero** - Eye-catching introduction with gradient text and animated CTAs
-2. **About** - Four-card grid with scroll-triggered animations
-3. **Skills** - 12 technology cards with hover animations
-4. **Projects** - Featured projects with parallax effects
-5. **Contact** - Social links and contact information
-
-## 📦 Building for Production
+## Scripts
 
 ```bash
-cd snip
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Lint
+npm run lint
+```
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Open http://localhost:5173 in your browser
+
+## Building for Production
+
+```bash
 npm run build
 ```
 
-The optimized build will be in the `snip/dist/` directory.
-
-## 📚 Documentation
-
-For detailed setup instructions, customization options, and API documentation, see:
-
-- [snip/README.md](./snip/README.md) - Complete project documentation
-
----
-
-Built with ❤️ using React, GSAP, Tailwind CSS, and ShadCN UI
+The built files will be in the `dist/` directory.
