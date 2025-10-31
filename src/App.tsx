@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Navigation } from './components/Navigation'
+import { Navigation, InkBackground, CustomCursor } from './components'
 import { Hero, About, Skills, Projects, Contact } from './components/sections'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -26,14 +26,19 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navigation />
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Contact />
-    </div>
+    <>
+      <InkBackground particleCount={50} respectReducedMotion />
+      <CustomCursor respectReducedMotion />
+      
+      <div className="min-h-screen text-foreground relative z-10">
+        <Navigation />
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Contact />
+      </div>
+    </>
   )
 }
 

@@ -39,7 +39,6 @@
 @layer base {
   * {
     @apply border-border;
-    cursor: none;
   }
   
   html {
@@ -47,8 +46,10 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: transparent;
+    cursor: none;
   }
 }
 
@@ -76,5 +77,9 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  
+  body {
+    cursor: auto !important;
   }
 }
