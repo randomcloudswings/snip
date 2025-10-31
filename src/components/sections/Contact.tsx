@@ -1,24 +1,104 @@
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
 import { Github, Linkedin, Mail, Twitter } from 'lucide-react'
+import { useReducedMotion } from '@/hooks'
+import { ANIMATION_EASINGS, ANIMATION_DURATIONS, STAGGER_AMOUNTS } from '@/utils/animations'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export function Contact() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
   }
 
+  useEffect(() => {
+    if (!sectionRef.current || !headerRef.current || !contentRef.current) return
+
+    const header = headerRef.current
+    const content = contentRef.current
+
+    if (prefersReducedMotion) {
+      gsap.set([header, content], {
+        opacity: 1,
+        y: 0,
+      })
+      return
+    }
+
+    const headerTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: header,
+        start: 'top 80%',
+        end: 'bottom 60%',
+        toggleActions: 'play none none reverse',
+      },
+    })
+
+    gsap.set(header, { opacity: 0, y: 50, force3D: true })
+
+    headerTimeline.to(header, {
+      opacity: 1,
+      y: 0,
+      duration: ANIMATION_DURATIONS.medium,
+      ease: ANIMATION_EASINGS.smooth,
+    })
+
+    const contentTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: content,
+        start: 'top 80%',
+        end: 'bottom 60%',
+        toggleActions: 'play none none reverse',
+      },
+    })
+
+    const contentChildren = content.children
+    gsap.set(contentChildren, { opacity: 0, y: 60, force3D: true })
+
+    contentTimeline.to(contentChildren, {
+      opacity: 1,
+      y: 0,
+      duration: ANIMATION_DURATIONS.medium,
+      stagger: STAGGER_AMOUNTS.normal,
+      ease: ANIMATION_EASINGS.smooth,
+    })
+
+    return () => {
+      headerTimeline.kill()
+      contentTimeline.kill()
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (trigger.vars.trigger === header || trigger.vars.trigger === content) {
+          trigger.kill()
+        }
+      })
+    }
+  }, [prefersReducedMotion])
+
   return (
     <section 
+      ref={sectionRef}
       id="contact" 
       className="min-h-screen flex items-center justify-center py-20 md:py-32 relative"
       data-scroll-section
     >
       <div className="container mx-auto px-4" data-parallax-layer="content">
         <div className="max-w-4xl mx-auto space-y-12">
-          <div className="text-center space-y-4" data-gsap-contact-header>
+          <div 
+            ref={headerRef}
+            className="text-center space-y-4" 
+            data-gsap-contact-header
+          >
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
               Get In Touch
             </h2>
@@ -27,7 +107,11 @@ export function Contact() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" data-gsap-contact-content>
+          <div 
+            ref={contentRef}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8" 
+            data-gsap-contact-content
+          >
             <div className="lg:col-span-2">
               <Card className="backdrop-blur-sm bg-card/50 border-border/50">
                 <CardHeader>

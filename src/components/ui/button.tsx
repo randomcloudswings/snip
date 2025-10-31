@@ -1,4 +1,6 @@
 import * as React from "react"
+import { useEffect, useRef } from "react"
+import { gsap } from "gsap"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
@@ -40,10 +42,45 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => {
+    const buttonRef = useRef<HTMLButtonElement>(null)
+    const internalRef = (ref as React.RefObject<HTMLButtonElement>) || buttonRef
+
+    useEffect(() => {
+      const element = internalRef.current
+      if (!element) return
+
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+      if (mediaQuery.matches) return
+
+      const handleMouseEnter = () => {
+        gsap.to(element, {
+          scale: 1.05,
+          duration: 0.3,
+          ease: 'power2.out',
+        })
+      }
+
+      const handleMouseLeave = () => {
+        gsap.to(element, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out',
+        })
+      }
+
+      element.addEventListener('mouseenter', handleMouseEnter)
+      element.addEventListener('mouseleave', handleMouseLeave)
+
+      return () => {
+        element.removeEventListener('mouseenter', handleMouseEnter)
+        element.removeEventListener('mouseleave', handleMouseLeave)
+      }
+    }, [internalRef])
+
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
+        ref={internalRef}
         {...props}
       />
     )
